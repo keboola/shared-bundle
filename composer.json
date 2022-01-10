@@ -1,0 +1,26 @@
+{
+    "name": "keboola/job-queue-shared-bundle",
+    "type": "library",
+    "license": "MIT",
+    "autoload": {
+        "psr-4": {
+            "Keboola\\JobQueueSharedBundle\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "Keboola",
+            "email": "devel@keboola.com"
+        }
+    ],
+    "config": {
+        "lock": false
+    },
+    "require": {
+        "php": "^7.4 || ^8.0",
+        "keboola/retry": "^0.5.0",
+        "symfony/http-kernel": "^5.1",
+        "symfony/dependency-injection": "^5.1",
+        "doctrine/doctrine-bundle": "^2.1"
+    }
+}
