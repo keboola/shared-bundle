@@ -7,6 +7,7 @@ namespace Keboola\JobQueueSharedBundle\Database;
 use Doctrine\DBAL\Cache\QueryCacheProfile;
 use Doctrine\DBAL\Connection as DBALConnection;
 use Doctrine\DBAL\ParameterType;
+use Doctrine\DBAL\Result;
 use Retry\RetryProxy;
 
 class ConnectionWithRetry extends DBALConnection
@@ -18,55 +19,77 @@ class ConnectionWithRetry extends DBALConnection
         $this->retryProxy = $retryProxy;
     }
 
-    public function connect()
+    public function connect(): bool
     {
         return $this->call(fn () => parent::connect());
     }
 
-    public function query(...$args)
+    public function query(string $sql): Result
     {
-        return $this->call(fn () => parent::query(...$args));
+        return $this->call(fn () => parent::query($sql));
     }
 
-    public function exec($sql)
+    public function exec(string $sql): int
     {
         return $this->call(fn () => parent::exec($sql));
     }
 
-    public function executeQuery($query, array $params = array(), $types = array(), QueryCacheProfile $qcp = null)
-    {
-        return $this->call(fn () => parent::executeQuery($query, $params, $types, $qcp));
+    /**
+     * @inheritdoc
+     */
+    public function executeQuery(
+        string $sql,
+        array $params = [],
+        $types = [],
+        ?QueryCacheProfile $qcp = null
+    ): Result {
+        return $this->call(fn () => parent::executeQuery($sql, $params, $types, $qcp));
     }
 
-    public function executeStatement($sql, array $params = [], array $types = [])
+    /**
+     * @inheritdoc
+     */
+    public function executeStatement($sql, array $params = [], array $types = []): int
     {
         return $this->call(fn () => parent::executeStatement($sql, $params, $types));
     }
 
+    /**
+     * @inheritdoc
+     */
     public function quote($value, $type = ParameterType::STRING)
     {
         return $this->call(fn () => parent::quote($value, $type));
     }
 
-    public function beginTransaction()
+    public function beginTransaction(): bool
     {
         return $this->call(fn () => parent::beginTransaction());
     }
 
-    public function commit()
+    public function commit(): bool
     {
         return $this->call(fn () => parent::commit());
     }
 
-    public function rollBack()
+    public function rollBack(): bool
     {
         return $this->call(fn () => parent::rollBack());
     }
 
+    /**
+     * @param callable(): T $fn
+     * @return T
+     *
+     * @template T
+     */
     private function call(callable $fn)
     {
         if ($this->retryProxy !== null) {
-            return $this->retryProxy->call($fn);
+            $result = $this->retryProxy->call($fn);
+
+            /** @var T $result */
+            return $result;
         }
 
         return $fn();

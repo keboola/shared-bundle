@@ -19,10 +19,11 @@ class ConfigureDbalRetryProxyPass implements CompilerPassInterface
             return;
         }
 
-        foreach ($container->getParameter('doctrine.connections') as $serviceName) {
+        $connections = (array) $container->getParameter('doctrine.connections');
+        foreach ($connections as $serviceName) {
             $connectionDefinition = $container->getDefinition($serviceName);
 
-            if (!is_a($connectionDefinition->getClass(), ConnectionWithRetry::class, true)) {
+            if (!is_a((string) $connectionDefinition->getClass(), ConnectionWithRetry::class, true)) {
                 continue;
             }
 
