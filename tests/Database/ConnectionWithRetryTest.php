@@ -24,7 +24,7 @@ class ConnectionWithRetryTest extends TestCase
         $this->logsHandler = new TestHandler();
         $this->dbConnection = $this->setUpMysqlProxy(
             (string) getenv('TEST_DATABASE_URL'),
-            $this->logsHandler
+            $this->logsHandler,
         );
     }
 
@@ -61,7 +61,7 @@ class ConnectionWithRetryTest extends TestCase
         } catch (DbalException $e) {
             $this->assertSame(
                 'An exception occurred in the driver: SQLSTATE[HY000] [2002] Connection refused',
-                $e->getMessage()
+                $e->getMessage(),
             );
         }
 
