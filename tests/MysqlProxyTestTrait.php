@@ -43,12 +43,12 @@ trait MysqlProxyTestTrait
             new RetryProxy(
                 new SimpleRetryPolicy(self::$MAX_DB_RETRIES),
                 new NoBackOffPolicy(),
-                new Logger('retry', [$logsHandler])
+                new Logger('retry', [$logsHandler]),
             ),
             function (bool $shouldFail) use ($toxiproxy, $mysqlProxy): void {
                 $mysqlProxy->setEnabled($shouldFail === false);
                 $toxiproxy->update($mysqlProxy);
-            }
+            },
         );
 
         $configuration = new Configuration();

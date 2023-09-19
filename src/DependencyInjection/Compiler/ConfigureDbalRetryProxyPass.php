@@ -50,7 +50,7 @@ class ConfigureDbalRetryProxyPass implements CompilerPassInterface
 
     private function getConfigurationServiceDefinition(
         ContainerBuilder $container,
-        string $connectionServiceName
+        string $connectionServiceName,
     ): Definition {
         $connectionDefinition = $container->getDefinition($connectionServiceName);
 
@@ -76,7 +76,7 @@ class ConfigureDbalRetryProxyPass implements CompilerPassInterface
     private function createRetryMiddleware(
         ContainerBuilder $containerBuilder,
         string $namePrefix,
-        int $retries
+        int $retries,
     ): Reference {
         $retryPolicyServiceName = sprintf('%s.retry_middleware.retry_proxy.retry_policy', $namePrefix);
         $containerBuilder->setDefinition($retryPolicyServiceName, new Definition(SimpleRetryPolicy::class, [
